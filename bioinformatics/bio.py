@@ -28,7 +28,7 @@ def FASTA_to_lists() -> tuple:
     return seq_names, seqs
 
 
-def DNA_to_mRNA(s: str) -> str:
+def DNA_to_RNA(s: str) -> str:
     # Input: string of DNA
     # Output: transcribe of DNA into RNA
     # at most O(n)
@@ -148,39 +148,6 @@ def MendelsFirstLaw(k: int, m: int, n: int) -> float:
     # (p_yyAB)ij = prob(yy | A=i, B=j)
 
     return 1 - np.sum(p_yyAB * p_AB)
-
-
-def RNA_to_Protein(s: str) -> str:
-    # Input: mRNA string s in form of AUG...STOPCODON
-    # Output: transcribe of s into protein chains, aka polypeptide
-
-    proteins = \
-        {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
-         'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
-         'UUA': 'L', 'CUA': 'L', 'AUA': 'I', 'GUA': 'V',
-         'UUG': 'L', 'CUG': 'L', 'AUG': 'M', 'GUG': 'V',
-         'UCU': 'S', 'CCU': 'P', 'ACU': 'T', 'GCU': 'A',
-         'UCC': 'S', 'CCC': 'P', 'ACC': 'T', 'GCC': 'A',
-         'UCA': 'S', 'CCA': 'P', 'ACA': 'T', 'GCA': 'A',
-         'UCG': 'S', 'CCG': 'P', 'ACG': 'T', 'GCG': 'A',
-         'UAU': 'Y', 'CAU': 'H', 'AAU': 'N', 'GAU': 'D',
-         'UAC': 'Y', 'CAC': 'H', 'AAC': 'N', 'GAC': 'D',
-         'UAA': 'Z', 'CAA': 'Q', 'AAA': 'K', 'GAA': 'E',
-         'UAG': 'Z', 'CAG': 'Q', 'AAG': 'K', 'GAG': 'E',
-         'UGU': 'C', 'CGU': 'R', 'AGU': 'S', 'GGU': 'G',
-         'UGC': 'C', 'CGC': 'R', 'AGC': 'S', 'GGC': 'G',
-         'UGA': 'Z', 'CGA': 'R', 'AGA': 'R', 'GGA': 'G',
-         'UGG': 'W', 'CGG': 'R', 'AGG': 'R', 'GGG': 'G'}
-    # there is no protein Z avaliable, here 'Z' means 'STOP'
-    polypeptide = ''
-    assert len(s) % 3 == 0
-    assert s[:3] == 'AUG'
-    assert s[-3:] in ['UAA', 'UAG', 'UGA']
-    # assume there is no stop codon at the middle
-
-    for i in range((len(s) // 3) - 1):
-        polypeptide += proteins[s[3 * i: 3 * i + 3]]
-    return polypeptide
 
 
 def prefix_function(s: str) -> list:
@@ -442,6 +409,42 @@ def is_there_common_substring(u: str, v: str, l: int, p=51, m=2 ** 64) -> bool:
     return False
 
 
+def RNA_from_Protein(s: str) -> int:
+    # Input: pepdite chain s
+    # Output: the number of different RNA chains encoding that polypeptide
+
+    proteins = \
+        {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
+         'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
+         'UUA': 'L', 'CUA': 'L', 'AUA': 'I', 'GUA': 'V',
+         'UUG': 'L', 'CUG': 'L', 'AUG': 'M', 'GUG': 'V',
+         'UCU': 'S', 'CCU': 'P', 'ACU': 'T', 'GCU': 'A',
+         'UCC': 'S', 'CCC': 'P', 'ACC': 'T', 'GCC': 'A',
+         'UCA': 'S', 'CCA': 'P', 'ACA': 'T', 'GCA': 'A',
+         'UCG': 'S', 'CCG': 'P', 'ACG': 'T', 'GCG': 'A',
+         'UAU': 'Y', 'CAU': 'H', 'AAU': 'N', 'GAU': 'D',
+         'UAC': 'Y', 'CAC': 'H', 'AAC': 'N', 'GAC': 'D',
+         'UAA': 'Z', 'CAA': 'Q', 'AAA': 'K', 'GAA': 'E',
+         'UAG': 'Z', 'CAG': 'Q', 'AAG': 'K', 'GAG': 'E',
+         'UGU': 'C', 'CGU': 'R', 'AGU': 'S', 'GGU': 'G',
+         'UGC': 'C', 'CGC': 'R', 'AGC': 'S', 'GGC': 'G',
+         'UGA': 'Z', 'CGA': 'R', 'AGA': 'R', 'GGA': 'G',
+         'UGG': 'W', 'CGG': 'R', 'AGG': 'R', 'GGG': 'G'}
+
+    def f(p: str) -> int:
+        # Input: protein p as letter of english alphabet
+        # Output: amount of different RNA string which encode that protein
+
+        cnt = 0
+        for k in proteins.keys():
+            if proteins[k] == p:
+                cnt += 1
+        return cnt
+
+    s = s + 'Z'  # added stop codon Z
+    return reduce(lambda x, y: x * y, [f(v) for v in s])
+
+
 def longest_common_substrings(u: str, v: str) -> list:
     # Input: u, v string
     # Output: their longest common substrings
@@ -526,50 +529,11 @@ def someshitcodeinsteadofsuffixtree():
             g.write("nixua net")
 
 
-def mRNA_from_Protein(s: str):
-    # Input: polypepdite chain s
-    # Output: number of different RNA chains encoding that polypeptide
-
-    proteins = \
-        {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
-         'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
-         'UUA': 'L', 'CUA': 'L', 'AUA': 'I', 'GUA': 'V',
-         'UUG': 'L', 'CUG': 'L', 'AUG': 'M', 'GUG': 'V',
-         'UCU': 'S', 'CCU': 'P', 'ACU': 'T', 'GCU': 'A',
-         'UCC': 'S', 'CCC': 'P', 'ACC': 'T', 'GCC': 'A',
-         'UCA': 'S', 'CCA': 'P', 'ACA': 'T', 'GCA': 'A',
-         'UCG': 'S', 'CCG': 'P', 'ACG': 'T', 'GCG': 'A',
-         'UAU': 'Y', 'CAU': 'H', 'AAU': 'N', 'GAU': 'D',
-         'UAC': 'Y', 'CAC': 'H', 'AAC': 'N', 'GAC': 'D',
-         'UAA': 'Z', 'CAA': 'Q', 'AAA': 'K', 'GAA': 'E',
-         'UAG': 'Z', 'CAG': 'Q', 'AAG': 'K', 'GAG': 'E',
-         'UGU': 'C', 'CGU': 'R', 'AGU': 'S', 'GGU': 'G',
-         'UGC': 'C', 'CGC': 'R', 'AGC': 'S', 'GGC': 'G',
-         'UGA': 'Z', 'CGA': 'R', 'AGA': 'R', 'GGA': 'G',
-         'UGG': 'W', 'CGG': 'R', 'AGG': 'R', 'GGG': 'G'}
-
-    def f(p: str) -> int:
-        # Input: protein p as letter of english alphabet
-        # Output: amount of different RNA string which encode that protein
-
-        cnt = 0
-        for k in proteins.keys():
-            if proteins[k] == p:
-                cnt += 1
-        return cnt
-
-    m = 1
-    for s_ in s:
-        print(f(s_), s_)
-        m *= f(s_) % 1000000
-    print(m % 1000000)
-
-
 def DNA_to_Protein(s: str) -> str:
     # Input: dna string s
     # Output: every distinct candidate protein string that can be translated from ORFs of s
-
-    mRNA = DNA_to_mRNA(s)
+    # TODO: FIX
+    mRNA = DNA_to_RNA(s)
 
     def f(a: np.ndarray, x: int) -> int:
         # Input: array a of integers, integer x
@@ -614,34 +578,38 @@ def permutations_dna(n: int) -> list:
         print(*p_)
 
 
-def CalculateProteinMass(p: str) -> float:
+def CalculateProteinMass(p: str, mass_mode='float') -> float:
     # Input: protein p
-    # Output: its mass
+    # Output: its mass in Da
 
-    weigths = {'A': 71.03711,
-               'C': 103.00919,
-               'D': 115.02694,
-               'E': 129.04259,
-               'F': 147.06841,
-               'G': 57.02146,
-               'H': 137.05891,
-               'I': 113.08406,
-               'K': 128.09496,
-               'L': 113.08406,
-               'M': 131.04049,
-               'N': 114.04293,
-               'P': 97.05276,
-               'Q': 128.05858,
-               'R': 156.10111,
-               'S': 87.03203,
-               'T': 101.04768,
-               'V': 99.06841,
-               'W': 186.07931,
-               'Y': 163.06333}
-    mass = 0
-    for p_ in p:
-        mass += weigths[p_]
-    return mass
+    mass = {'A': 71.03711,
+            'C': 103.00919,
+            'D': 115.02694,
+            'E': 129.04259,
+            'F': 147.06841,
+            'G': 57.02146,
+            'H': 137.05891,
+            'I': 113.08406,
+            'K': 128.09496,
+            'L': 113.08406,
+            'M': 131.04049,
+            'N': 114.04293,
+            'P': 97.05276,
+            'Q': 128.05858,
+            'R': 156.10111,
+            'S': 87.03203,
+            'T': 101.04768,
+            'V': 99.06841,
+            'W': 186.07931,
+            'Y': 163.06333}
+    m = 0
+    if mass_mode == 'int':
+        for p_ in p:
+            m += int(mass[p_])
+    elif mass_mode == 'float':
+        for p_ in p:
+            m += mass[p_]
+    return m
 
 
 def longest_polyndrome(s: str) -> list:
@@ -691,13 +659,15 @@ def longest_polyndrome(s: str) -> list:
             #                                     s[obj[0]+k:obj[0]+k+30]))
     return polys
 
+
 class Node:
     def __init__(self, value):
+        # value: str
         self.value = value
         self.links = []
 
     def add_link(self, link):
-        # assume type(link)=Link
+        # link: Link
         self.links.append(link)
 
     def __str__(self) -> str:
@@ -707,6 +677,7 @@ class Node:
         return node
 
     def equals(self, node) -> bool:
+        # node: Node
         flag = (self.value == node.value)
         if len(self.links) == len(node.links):
             for i in range(len(self.links)):
@@ -717,7 +688,9 @@ class Node:
 
 
 class Link:
-    def __init__(self, tail: Node, mark: str, head: Node):
+    def __init__(self, tail, mark: str, head):
+        # tail, head : Node
+        # mark: str
         self.tail = tail
         self.head = head
         self.mark = mark
@@ -726,7 +699,7 @@ class Link:
         return '(%s --%s--> %s)' % (self.tail.value, self.mark, self.head.value)
 
     def equals(self, link) -> bool:
-        # assume link is Link object
+        # link: Link
         return (self.tail == link.tail) and (self.mark == link.mark) and (self.head == link.head)
 
 
@@ -776,9 +749,3 @@ def main():
         s2.add_link(s2_1_s2)
 
         a = Automata(s0, [s0, s1, s2], s0)
-        print(a)
-        print(a.accepts('1011101'))  # True
-        print(a.accepts('10111011'))  # False
-
-
-main()
