@@ -42,9 +42,9 @@ Mass_int = {'A': 71,
             'F': 147,
             'G': 57,
             'H': 137,
+            'L': 113,
             'I': 113,
             'K': 128,
-            'L': 113,
             'M': 131,
             'N': 114,
             'P': 97,
@@ -78,9 +78,9 @@ tyrocidine = 'VKLFPWFNQY'
 1928, Alexander Fleming, Penicillium - Staphylococcus bacteria
 """
 
-# ____________________________________
+# ______________________________
 # 2 How do bacteria make antibiotics?
-# ____________________________________
+# ______________________________
 
 """ 
 Tyrocidine B1 -- one of many antibiotics produced by Baciliius brevis
@@ -99,7 +99,6 @@ def RNA_to_Protein(s: str, start=False, stop=False) -> str:
     # Input: RNA string s in form AUG...STOPCODON
     # Output: transcribe of s into peptide
     # Complexity: O(n)
-
     peptide = ''
     if start:
         assert s[:3] == 'AUG'
@@ -123,7 +122,6 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     # Def: We say that a DNA string Pattern encodes an amino acid string Peptide if the RNA
     # string transcribed from either Pattern or its reverse complement translates into
     # Peptide
-
     substrings = []
     substrings_rc = []
     text_rc = bio.ReverseComplement(text)
@@ -154,9 +152,9 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     return substrings + ['#'] + substrings_rc
 
 
-# ____________________________________
+# ______________________________
 # 3 Sequencing antibiotics by shattering them into pieces
-# ____________________________________
+# ______________________________
 
 """
 Glycine = C2H3ON -> 57 mass, but Glucine~amino acid G
@@ -174,7 +172,6 @@ def GenerateTheoreticalCycloSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Input: amino acid peptide (mass_mode = int or float, values of mass in Da)
     # Output: theoretical spectrum of peptide (CycloSpectrum)
     # Complexty: O(n^2), there is solution by prefix mass precount
-
     modified_peptide = peptide + peptide
     subpeptides = []
     mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
@@ -193,7 +190,6 @@ def GenerateTheoreticalLinearSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Input: amino acid peptide (mass_mode = int or float, values of mass in Da)
     # Output: theoretical spectrum of peptide (LinearSpectrum)
     # Complexty: O(n^2), there is solution by prefix mass precount
-
     subpeptides = []
     mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
     for l in range(1, len(peptide)):  # 1, 2, ..., n-1 ~~ O(|peptide| - 1)
@@ -209,7 +205,6 @@ def GenerateTheoreticalLinearSpectrum(peptide: str, mass_mode='float') -> tuple:
 def plot_spectrum(spectrum: list, compare_spectrum=None):
     # Input: theoretical spectrum
     # Output: print and plot spectrum
-
     plt.figure()
     plt.grid(linestyle=':', linewidth=1)
     plt.xlabel('n')
@@ -220,10 +215,9 @@ def plot_spectrum(spectrum: list, compare_spectrum=None):
     plt.show()
 
 
-# ____________________________________
+# ______________________________
 # 4 a brute force algorithm for cyclopeptide sequencing
-# ____________________________________
-
+# ______________________________
 
 # 4D Code challenge:
 def CountingPeptideswithGivenMass(m: int) -> int:
@@ -234,9 +228,9 @@ def CountingPeptideswithGivenMass(m: int) -> int:
     pass
 
 
-# ____________________________________
+# ______________________________
 # 5 cyclopeptide sequencing with branch-and-bound
-# ____________________________________
+# ______________________________
 
 """
 BRANCH-AND-BOUND algorithms: each such algorithm consists of a branching
@@ -263,7 +257,6 @@ def CyclopeptideSequencing(spectrum: list) -> str:
     # Output: reconstruct a cyclic peptide, such that CycloSpectrum(peptide) = spectrum(return None if no peptide)
     # Complexty: O(n^a), but in practice faster
     # Answer is accurate to a cyclic shift and/or reverse
-
     peptides = ['']
 
     def get_alphabet(spectrum: list) -> list:
@@ -312,23 +305,25 @@ def CyclopeptideSequencing(spectrum: list) -> str:
             elif not is_consistent(p):
                 peptides.remove(p)
                 i -= 1
+    print('None')
     return None
 
 
-# ____________________________________
+# ______________________________
 # 6 adapting sequencing for spectra with errors
-# ____________________________________
+# ______________________________
 
 # 4F Code challenge
 def PeptideScoring(peptide_type: str, peptide: str, spectrum: list) -> float:
     # Input: peptide type: 'linear' or 'cyclic' amino acid cyclic or linear peptide, list of (int) spectrum
     # Output: compute the SCORE(Peptide, Spectrum)
-
     peptide_sp = []
+    # compute theoretical spectrum
     if peptide_type == 'linear':
         peptide_sp = GenerateTheoreticalLinearSpectrum(peptide, mass_mode='int')[1]
     elif peptide_type == 'cyclic':
         peptide_sp = GenerateTheoreticalCycloSpectrum(peptide, mass_mode='int')[1]
+    # calculate score
     score = list((Counter(peptide_sp) - Counter(spectrum)).elements())
     return len(peptide_sp) - len(score)
 
@@ -346,20 +341,36 @@ def LinearPeptideScoring(peptide: str, spectrum: list) -> float:
 
 
 # 4G Code challenge
-def LeaderBoardCyclopeptideSequencing(spectrum: int, N: int) -> str:
+def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
     # Input: A collection of integers Spectrum.
     # Output: A cyclic peptide Peptide maximizing SCORE(Peptide, Spectrum) over
     # all peptides Peptide with mass equal to PARENTMASS(Spectrum)
-
     Leaderboard = ['']
     LeaderPeptide = ''
     mass = lambda p: bio.CalculateProteinMass(p, mass_mode='int')
 
-    def expand(lb: list) -> list:
+    def expand(lb: list, a=None) -> list:
         lb_ = []
-        a = list(Mass_int.keys())
+        alphabet = []
+        if a is None:
+            alphabet = list(Mass_int.keys())
+        else:
+            # assuming a is alphabet of spectral convolution <=> list of tuples (acidoacidnum, cnt)
+            for elem in a:
+                if Mass_int['K'] == elem[0] or Mass_int['Q'] == elem[0]:
+                    alphabet.append('K')
+                    # alphabet.append('Q') #they are the same
+                elif Mass_int['I'] == elem[0] or Mass_int['L'] == elem[0]:
+                    # alphabet.append('I') #they are the same
+                    alphabet.append('L')
+                else:
+                    for k in Mass_int.keys():
+                        if Mass_int[k] == elem[0]:
+                            alphabet.append(k)
+            alphabet = list(set(alphabet))
+
         for p in lb:
-            for a_ in a:
+            for a_ in alphabet:
                 lb_.append(p + a_)
         return lb_
 
@@ -382,7 +393,7 @@ def LeaderBoardCyclopeptideSequencing(spectrum: int, N: int) -> str:
     iteration = 0
     while len(Leaderboard) > 0:
         iteration += 1
-        Leaderboard = expand(Leaderboard)
+        Leaderboard = expand(Leaderboard, a=a)
         i = 0
         while i < len(Leaderboard):
             p = Leaderboard[i]  # peptide from Leaderboard
@@ -395,28 +406,60 @@ def LeaderBoardCyclopeptideSequencing(spectrum: int, N: int) -> str:
                 i -= 1
         l = len(Leaderboard)
         Leaderboard = trim(lb=Leaderboard, spectrum=spectrum, N=N)
-        print('iter: {}, LB: {} .trim. {}, Score: {}'.format(iteration, l, len(Leaderboard),
+        print('iter: {}, LB: {} .trim. {}, score: {}'.format(iteration, l, len(Leaderboard),
                                                              CyclopeptideScoring(LeaderPeptide, spectrum)))
     print(LeaderPeptide)
     return LeaderPeptide
 
 
-s = [0, 97, 99, 113, 114, 115, 128, 128, 147, 147, 163, 186, 227, 241, 242, 244, 244, 256, 260, 261, 262, 283, 291, 309,
-     330, 333, 340, 347, 357, 385, 388, 389, 390, 390, 405, 430, 430, 435, 447, 485, 487, 503, 504, 518, 543, 544, 552,
-     575, 577, 584, 599, 608, 631, 632, 650, 651, 653, 671, 672, 690, 691, 717, 738, 745, 747, 770, 778, 779, 804, 818,
-     819, 827, 835, 837, 875, 892, 892, 917, 932, 932, 933, 934, 965, 982, 989, 1031, 1039, 1060, 1061, 1062, 1078,
-     1080, 1081, 1095, 1136, 1159, 1175, 1175, 1194, 1194, 1208, 1209, 1223, 1225, 1322]
-start = time.time()
-g = LeaderBoardCyclopeptideSequencing(spectrum=s, N=50)
-print('{} s'.format(time.time() - start))
-# ____________________________________
+# ______________________________
 # 7 from 20 to more than 100 amino acids
-# ____________________________________
+# ______________________________
 
-# ____________________________________
+# blablabal complexity explosion
+
+
+# ______________________________
 # 8 the spectral convolution saves the day
-# ____________________________________
+# ______________________________
 
-# ____________________________________
+# 4H Code challenge
+def SpectralConvolution(spectrum: list) -> Counter:
+    # Input: list of numbers spectrum (assuming experimental spectrum)
+    # Output: The list of elements in the convolution of Spectrum in decreasing order of their multiplicities
+    # I will cut the array such that values will lie in range [57, 200]
+    n = len(spectrum)
+    cnt = Counter()
+    for i in range(n):
+        for j in range(i):
+            t = spectrum[i] - spectrum[j]
+            if 201 > t > 56:
+                cnt[t] += 1
+    return cnt
+
+
+def get_SpectralAlphabet(spectrum: list, M: int) -> list:
+    # Input: list of nums spectrum, int M
+    # Output: alphabet of M (or more with'tie') amino acids such that they frequently appear in spectrum convolution
+    spectrum = SpectralConvolution(spectrum)
+    spc = sorted(list(spectrum.items()), key=lambda x: -x[1])
+    M -= 1
+    for j in range(M + 1, len(spc)):
+        if spc[M][1] > spc[j][1]:
+            spc = spc[:j]
+            return spc
+    return spc
+
+
+# ______________________________
 # 9 the truth about spectra
-# ____________________________________
+# ______________________________
+
+# 4I Code challenge:
+def ConvolutionCyclopeptideSequencing(spectrum: list, N: int, M: int) -> str:
+    # Case of LeaderBoardCyclopeptideSequencing, where alphabet computed by spectral convolution
+    alphabet = get_SpectralAlphabet(spectrum, M)
+    return LeaderBoardCyclopeptideSequencing(spectrum=spectrum, N=N, a=alphabet)
+
+# intensity vs mass/charge ratio
+#also solved as 4J, 4K, 4L.
