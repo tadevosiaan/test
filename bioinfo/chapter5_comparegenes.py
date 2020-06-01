@@ -73,7 +73,7 @@ def ManhattanTourist(down: list, right: list, diag=None):
                     path.append((i - 1, j))
                 elif s[i][j] == s[i][j - 1] + right[i][j]:
                     path.append((i, j - 1))
-    print_array(s)
+    print_matrix(s)
     print(path)
     return s[n][m], path
 
@@ -230,8 +230,8 @@ def LongestPathInDAG(G, source, sink):
     score[source] = 0
     t = topological_sort(G)
     for b in t:
-        s[b] = compute_score(b, G)
-    return s[sink]
+        score[b] = compute_score(b, G)
+    return score[sink]
 
 
 # ______________________________
