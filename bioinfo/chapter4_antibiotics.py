@@ -248,7 +248,7 @@ def CyclopeptideSequencing(spectrum: list) -> str:
 
 # 4F Code challenge
 def PeptideScoring(peptide_type: str, peptide: str, spectrum: list) -> float:
-    # Input: peptide type: 'linear' or 'cyclic' amino acid cyclic or linear peptide, list of (int) spectrum
+    # Input: peptide type: 'linear' or 'cyclic' amino acid cyclic or linear peptide, list of (int) experimental spectrum
     # Output: compute the SCORE(Peptide, Spectrum)
     peptide_sp = []
     # compute theoretical spectrum
@@ -275,7 +275,7 @@ def LinearPeptideScoring(peptide: str, spectrum: list) -> float:
 
 # 4G Code challenge
 def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
-    # Input: A collection of integers Spectrum.
+    # Input: A collection of integers (experimental) Spectrum, int N(for trim), alphabet a (optional)
     # Output: A cyclic peptide Peptide maximizing SCORE(Peptide, Spectrum) over
     # all peptides Peptide with mass equal to PARENTMASS(Spectrum)
     Leaderboard = ['']
