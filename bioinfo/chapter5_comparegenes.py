@@ -4,20 +4,15 @@ import random
 
 
 # CHAPTER 5. How Do We Compare Genes?
-# ______________________________
-# 1 Introduction to sequence alignment
-# ______________________________
+# Dynamic programming
 
-# blablabla insertions deletions matches mismatches, sum of matches=score
+
+
 def LongestCommonSubsequence(u: str, v: str) -> str:
     # Input: two strings
     # Output: a longest common subsequence of there strings
     pass
 
-
-# ______________________________
-# 2 The Manhattan tourist problem
-# ______________________________
 
 Down = [[0, 0, 0, 0, 0],
         [1, 0, 2, 4, 3],
@@ -84,15 +79,6 @@ def LongestPathInDirectedGraph(graph):
     pass
 
 
-# ______________________________
-# 3 Sequence alignment is Manhattan tourist in disguise
-# ______________________________
-
-
-# ______________________________
-# 4 An intro to dynamic programming: the change problem
-# ______________________________
-
 
 # 5A Code challenge
 def DPChange(m: int, coins: list) -> int:
@@ -112,10 +98,6 @@ def DPChange(m: int, coins: list) -> int:
     print(d, '\n', d[m - 1], sep='')
     return d[m - 1]
 
-
-# ______________________________
-# 5 The Manhattan tourist problem revisited
-# ______________________________
 """
 class Node:
     def __init__(self, x, y, v=0):
@@ -190,8 +172,6 @@ class Grid:
             b = SouthOrEast(p.x, p.y - 1) + w[i, j]
         return max(a, b)
 """
-
-
 # shitshitshit
 
 
@@ -204,9 +184,6 @@ def hamming_distance(u: str, v: str) -> int:
     return distance
 
 
-# ______________________________
-# 6 From Manhattan to an arbitrary DirectedACyclicGraph (=DAG)
-# ______________________________
 def topological_sort(G):
     # Input: graph G (assuming DirectedAcylic)
     # Output: topological order of nodes
@@ -234,11 +211,6 @@ def LongestPathInDAG(G, source, sink):
     return score[sink]
 
 
-# ______________________________
-# 7 Backtracking in the alignment graph
-# ______________________________
-
-# >>>>>>>>>>we are here<<<<<<<<<
 def global_alignment_matrix(str1, str2, weights, gap_weight):
     n, m = len(str1), len(str2)
     F = [[0] * (m + 1) for i in range(n + 1)]
@@ -478,23 +450,5 @@ def LCS(v: str, w: str) -> str:
         print(a)
 
 
-v = 'GCC-C-AGTC-TATGT-CAGGGGGCACG--A-GCATGCACA'.replace('-', '')
-w = 'GCCGCC-GTCGT-T-TTCAG----CA-GTTATGT-T-CAGAT'.replace('-', '')
-align_info(v, w, w_mu1, -1)
-
-# ______________________________
-# 8 From global to local alignment
-# ______________________________
-
-
-# ______________________________
-# 9 Penalizing insertions and deletions in sequence alignment
-# ______________________________
-
-
-# ______________________________
-# 10 Multiple sequence alignment
-# ______________________________
-from skbio import alignment
 
 

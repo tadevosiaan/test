@@ -4,10 +4,11 @@ from tqdm import tqdm
 from itertools import permutations
 import time
 
+
 def NucleotidesCount(s: str) -> tuple:
     # Input: a DNA of letters A, T, C, G
     # Output: counts for each letter in the form (AGCT)
-    # at most O(n)?
+    # Complexity: O(n)?
     return s.count('A'), s.count('G'), s.count('C'), s.count('T')
 
 
@@ -30,18 +31,13 @@ def FASTA_to_lists(filename) -> tuple:
 def DNA_to_RNA(s: str) -> str:
     # Input: string of DNA
     # Output: transcribe of DNA into RNA
-    # at most O(n)
-
+    # Complexity: O(n)
     return s.replace('T', 'U')
-
-
-
 
 
 def RabbitsProblem(n: int, k: int) -> int:
     # Input: n month, k pairs new children after sex, 1 month is reproductive age
-    # Input: number of alive rabbit pairs after n months, assuming no rabbit dies
-
+    # Output: number of alive rabbit pairs after n months, assuming no rabbit dies
     F = [1, 1]
     for i in range(n - 2):
         t = k * F[0] + F[1]
@@ -52,21 +48,18 @@ def RabbitsProblem(n: int, k: int) -> int:
 def GC_content_value(s: str) -> float:
     # Input: DNA string
     # Output: its GC content, ie the percentage of C,G in DNA
-
     return (s.count('G') + s.count('C')) / len(s)
 
 
 def Hamming(s1: str, s2: str) -> int:
     # Input: DNA strings s1,s2 of same len
     # Output: hamming distance s1,s2
-
     return sum(a != b for a, b in zip(s1, s2))
 
 
 def GC_content():
     # Input: FASTA-encoded DNAs as text in input file(>Rosalind_xxxx, DNA)
     # Output: id of DNA with highest GC_content
-
     with open('input.txt', mode='r', encoding='utf-8') as f:
         max_gc_name, max_gc_content = '', 0
         buf = f.readline().rstrip()
@@ -87,29 +80,24 @@ def MendelsFirstLaw(k: int, m: int, n: int) -> float:
     # k individuals are homozygous dominant for a factor, m are heterozygous, and n are homozygous recessive.
     # Output: The probability that two randomly selected mating
     # organisms will produce an individual possessing a dominant allele
-
     p_AB = [[(k - 1) * k, k * m, k * n],
             [m * k, (m - 1) * m, m * n],
             [n * k, n * m, (n - 1) * n]]
     norm = 1.0 / ((m + n + k) * (m + n + k - 1))
-
     p_yyAB = [[0, 0, 0],
               [0, 0.25, 0.5],
               [0, 0.5, 1]]
     p_yyAB = np.array(p_yyAB)
     p_AB = np.array(p_AB) * norm
-
     # (p_AB)ij = prob(A = i, B = j), where i=0 <-> YY, i=1 <-> Yy, i=2 <-> yy
     # (p_yyAB)ij = prob(yy | A=i, B=j)
-
     return 1 - np.sum(p_yyAB * p_AB)
 
 
 def prefix_function(s: str) -> list:
     # Input: string s
     # Output: its prefix function, ie prefix_function[i]=len of the longest suffix equal to prefix at string s[:i]
-    # at most O(n)
-
+    # Complexity: O(n)
     pi = [0]
     for i in range(1, len(s)):
         j = pi[i - 1]
@@ -125,8 +113,7 @@ def KMP(text: str, pattern: str) -> list:
     # Knuth–Morris–Pratt algorithm
     # Input: strings text, pattern, len = n, m
     # Output: search for occurrences of a pattern in text (return indexies)
-    # at most O(n + m) time, O(n+m) (can be O(m), because PF is online algorithm)
-
+    # Complexity: O(n + m) time, O(n+m) (can be O(m), because PF is online algorithm)
     w = pattern + '#' + text
     pf = prefix_function(w)
     positions = []
@@ -139,7 +126,6 @@ def KMP(text: str, pattern: str) -> list:
 def poly_hash(s: str, p=51, m=2 ** 64) -> int:
     # Input: string s, integer p, modulo m
     # Output: compute polynomial hash of s with power p modulo m
-
     n = len(s)
     poly = np.array([p ** i for i in range(n)])
     s = np.array([ord(s[i]) for i in range(n)])
@@ -149,7 +135,6 @@ def poly_hash(s: str, p=51, m=2 ** 64) -> int:
 def poly_hash_array(s: str, l: int, p=51, m=2 ** 64) -> list:
     # Input: string Text, parametres p,M for poly hash function, len of substting lenght in Text
     # Output: array of l-length hashes of string Text
-
     n = len(s)
     poly = np.array([p ** i for i in range(l)], dtype=object)
     s = np.array([ord(s[i]) for i in range(n)], dtype=object)
@@ -166,8 +151,7 @@ def RK(text: str, pattern: str, p=51, m=2 ** 64) -> list:
     # Rabin-Karp algorithm
     # Input: text t , pattern s, len = n, m; power value p for hash
     # Output: search for occurrences of a Pattern in Text (return indexies)
-    # at most O(n+m) time
-
+    # Complexity: O(n+m)
     positions = []
     n = len(text)
     k = len(pattern)
@@ -184,7 +168,6 @@ def RK(text: str, pattern: str, p=51, m=2 ** 64) -> list:
 def Consensus():
     # Input: FASTA-encoded DNAs as text in input file(>Rosalind_xxxx, DNA)
     # Output: consesus string computed by profile matrix
-
     seq_names, seqs = FASTA_to_lists()
     # A <-> 0, C <-> 1, G <-> 2, T <-> 3
     n = len(seqs[0])  # len of dna
@@ -212,7 +195,6 @@ def Consensus():
 def MortalFib(n: int, m: int) -> int:
     # Input: n months,m months to be alive int, n<=100, m<=20
     # Output: number of pairs after n months
-
     x = np.zeros(m, dtype=np.uint64)
     x[0] = 1
     Q = np.zeros((m, m), dtype=np.uint64)
@@ -226,7 +208,6 @@ def MortalFib(n: int, m: int) -> int:
 
 class OverlapGraph:
     # Overlapping graph for set of strings DNA
-
     def __init__(self, k: int, seq: dict):
         self.k = k
         # vertices
@@ -305,7 +286,6 @@ def InferGenotypeFromPedigree(par1, par2):
 def common_substrings(u: str, v: str, l: int, p=51, m=2 ** 64) -> list:
     # Input: two strings u,v, integer l
     # Output: list of positions, where u,v have common l-substring
-
     if l == 0:
         return [None]  # special case to observe
     if not is_there_common_substring(u, v, l):
@@ -367,7 +347,6 @@ def is_there_common_substring(u: str, v: str, l: int, p=51, m=2 ** 64) -> bool:
 def RNA_from_Protein(s: str) -> int:
     # Input: pepdite chain s
     # Output: the number of different RNA chains encoding that polypeptide
-
     proteins = \
         {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
          'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
@@ -389,7 +368,6 @@ def RNA_from_Protein(s: str) -> int:
     def f(p: str) -> int:
         # Input: protein p as letter of english alphabet
         # Output: amount of different RNA string which encode that protein
-
         cnt = 0
         for k in proteins.keys():
             if proteins[k] == p:
@@ -403,11 +381,9 @@ def RNA_from_Protein(s: str) -> int:
 def longest_common_substrings(u: str, v: str) -> list:
     # Input: u, v string
     # Output: their longest common substrings
-
     def f(u: str, v: str, l_1: int, l_2: int) -> int:
         # Input: u,v, l_1, l_2
         # Output: find the lenght of longest common substring
-
         if l_2 - l_1 == 1:
             return l_1
         k = (l_1 + l_2) // 2
@@ -536,7 +512,6 @@ def permutations_dna(n: int) -> list:
 def CalculateProteinMass(p: str, mass_mode='float') -> float:
     # Input: protein p
     # Output: its mass in Da
-
     mass = {'A': 71.03711,
             'C': 103.00919,
             'D': 115.02694,
@@ -570,11 +545,9 @@ def CalculateProteinMass(p: str, mass_mode='float') -> float:
 def longest_polyndrome(s: str) -> list:
     # Input: string s
     # Output: longest substring of s that is polyndrome(as list)
-
     def exists_polyndrome(w: str, length: int) -> bool:
         # Input: string w, length
         # Output: check is there exists a polyndrome of length in w
-
         x = sorted(enumerate(poly_hash_array(s=w, l=length)), key=lambda x: x[1])
         y = sorted(enumerate(poly_hash_array(s=w[::-1], l=length)), key=lambda x: x[1])
         i, j = 0, 0
@@ -704,5 +677,7 @@ def main():
         s2.add_link(s2_1_s2)
 
         a = Automata(s0, [s0, s1, s2], s0)
-if __name__ =='__main__':
+
+
+if __name__ == '__main__':
     main()

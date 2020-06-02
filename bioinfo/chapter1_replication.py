@@ -5,11 +5,12 @@ from tqdm import tqdm
 
 
 # CHAPTER 1. Where in the genome doest DNA replication begin?
+# Algorithmic warmup
 
 def ReverseComplement(Pattern: str) -> str:
     # Input: a DNA string Pattern
     # Output: the reverse complement of Pattern
-    # at most O(n)
+    # Complexity: O(n)
     return Pattern[::-1].translate(str.maketrans('ACGT', 'TGCA'))
 
 
@@ -97,7 +98,7 @@ def ClumpFindingProblem(Genome: str, k: int, L: int, t: int) -> set:
 
 
 # 1F Code challenge
-def skew_gc(genome: str, k: int):
+def skew_gc(genome: str, k: int, save=None):
     # Input: str genome, int k
     # Output: plot the difference #G-#C for the first k nucleotides of genome, GC content diagram
     # Complexity: O(min(n,k))
@@ -138,6 +139,8 @@ def skew_gc(genome: str, k: int):
     ax2.set_ylim([0, 1])
     ax2.plot(gc_content, label='GC content', color='green')
     ax2.legend(loc='lower left')
+    if save is not None:
+        plt.savefig('{}.png'.format(save))
     plt.show()
 
 
@@ -194,6 +197,7 @@ def ComputeFrequencyArray(Text: str, k: int) -> Counter:
 def ImmediateNeighbors(Pattern: str) -> set:
     # Input: Pattern string
     # Output: get 1-neighborhood if the Pattern in HammDist
+    # TODO: check
     neighborhood = {Pattern}
     for i in range(len(Pattern)):
         s = Pattern[i]
@@ -206,6 +210,7 @@ def ImmediateNeighbors(Pattern: str) -> set:
     return neighborhood
 
 
+# 1N Code challenge
 def Neighbors(Pattern: str, d: int) -> set:
     # Input: Pattern string, d int
     # Output: d-neighborhood of Pattern in HammDist
@@ -227,6 +232,7 @@ def Neighbors(Pattern: str, d: int) -> set:
 def IterativeNeighbors(Pattern: str, d: int) -> set:
     # Input: Pattern string, d int
     # Output: iterative version of Neighbors()
+    # TODO: check
     neighborhood = {Pattern}
     for j in range(1, d + 1):
         for p in neighborhood:
@@ -244,7 +250,7 @@ def FrequentWordsWithMismatches(Text: str, k: int, d: int) -> list:
     c = Counter()
     for i in range(len(Text) - k + 1):
         s = Text[i:i + k]
-        neighbors = IterativeNeighbors(s, d)
+        neighbors = Neighbors(s, d)
         for n in neighbors:
             c[n] += 1
     c = list(c.items())
@@ -296,3 +302,44 @@ def FrequentWordsWithMismatchesAndReverseComplement(Text: str, k: int, d: int) -
             break
     patterns.sort(key=lambda x: x[0])
     return patterns
+
+
+def gen_DNA(n: int, k: int) -> list:
+    # Input: n, k integers
+    # Output: n DNA strings each len = k
+    from random import choice
+    l = []
+    for i in range(n):
+        s = ''
+        for j in range(k):
+            s += choice(['A', 'G', 'T', 'C'])
+        l.append(s)
+    return l
+
+
+def experiment():
+    np.random.seed(1337)
+    a = gen_DNA(10, 20)
+    print(a)
+    s = 'AAAGGG'
+    from random import choice
+
+    for i in range(len(a)):
+        j = np.random.randint(0, len(a[0]) - len(s) + 1)
+        k = np.random.randint(0, 6)
+        l = np.random.randint(0, 6)
+        t = list(a[i])
+        t_str = list(s)
+        t_str[k] = choice(['A', 'G', 'T', 'C'])
+        t_str[l] = choice(['A', 'G', 'T', 'C'])
+        t_str = ''.join(t_str)
+        t[j: j + len(s)] = t_str
+        print('iter: {}, s: {}, s_new: {}, pos: {}'.format(i, s, t_str, j))
+        a[i] = ''.join(t)
+    print(a)
+    long_Str = ''.join(a)
+    print(long_Str)
+    print(FrequentWordsWithMismatches(long_Str, 6, 2))
+
+a,b = FASTA_to_lists('EColi')
+skew_gc(b[0], len(b[0]), save='ecoli_oric')

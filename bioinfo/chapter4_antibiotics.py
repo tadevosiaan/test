@@ -5,9 +5,7 @@ from collections import Counter
 import time
 
 # CHAPTER 4. How Do We Sequence Antibiotics?
-# ______________________________
-# 1 The discovery of antibiotics
-# ______________________________
+# Brute force algorithms
 
 
 # there is no protein Z avaliable, here 'Z' means 'STOP'~'STP' codon
@@ -74,25 +72,6 @@ Proteins = {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
 
 tyrocidine = 'VKLFPWFNQY'
 
-"""
-1928, Alexander Fleming, Penicillium - Staphylococcus bacteria
-"""
-
-# ______________________________
-# 2 How do bacteria make antibiotics?
-# ______________________________
-
-""" 
-Tyrocidine B1 -- one of many antibiotics produced by Baciliius brevis
-Three-letter notation: Val Lys Leu Phe Pro Trp Phe Asn Gln Tyr
-One-letter notation:    V   K   L   F   P   W   F   N   Q   Y
-
-
-Central dogma of molecular biology:
-DNA --- transcription ---> RNA --- translation ---> Protein
-        RNA-polymerase              ribosome, NRP(non-ribosomal peptide) synthetase
-"""
-
 
 # 4A Code Challenge
 def RNA_to_Protein(s: str, start=False, stop=False) -> str:
@@ -117,7 +96,7 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     # Input: : A DNA string Text and an amino acid string Peptide.
     # Output: All substrings of Text encoding Peptide (if any such substrings exist),
     # actually pairs (pos, substr in text/text_rc starting at pos), '#' splits positions at text and at text_rc
-    # Complexty:  O(n)
+    # Complexity:  O(n)
     #
     # Def: We say that a DNA string Pattern encodes an amino acid string Peptide if the RNA
     # string transcribed from either Pattern or its reverse complement translates into
@@ -152,26 +131,11 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     return substrings + ['#'] + substrings_rc
 
 
-# ______________________________
-# 3 Sequencing antibiotics by shattering them into pieces
-# ______________________________
-
-"""
-Glycine = C2H3ON -> 57 mass, but Glucine~amino acid G
-
-EXERCISE BREAK: How many subpeptides does a cyclic peptide of length n
-have? 
-For example: NQEL has 12 subpeptides: N, Q, E, L, NQ,
-QE, EL, LN, NQE, QEL, ELN, and LNQ. 
-ANSWER: n(n-1)
-"""
-
-
 # 4C Code challenge:
 def GenerateTheoreticalCycloSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Input: amino acid peptide (mass_mode = int or float, values of mass in Da)
     # Output: theoretical spectrum of peptide (CycloSpectrum)
-    # Complexty: O(n^2), there is solution by prefix mass precount
+    # Complexity: O(n^2), there is solution by prefix mass precount
     modified_peptide = peptide + peptide
     subpeptides = []
     mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
@@ -189,7 +153,7 @@ def GenerateTheoreticalCycloSpectrum(peptide: str, mass_mode='float') -> tuple:
 def GenerateTheoreticalLinearSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Input: amino acid peptide (mass_mode = int or float, values of mass in Da)
     # Output: theoretical spectrum of peptide (LinearSpectrum)
-    # Complexty: O(n^2), there is solution by prefix mass precount
+    # Complexity: O(n^2), there is solution by prefix mass precount
     subpeptides = []
     mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
     for l in range(1, len(peptide)):  # 1, 2, ..., n-1 ~~ O(|peptide| - 1)
@@ -215,10 +179,6 @@ def plot_spectrum(spectrum: list, compare_spectrum=None):
     plt.show()
 
 
-# ______________________________
-# 4 a brute force algorithm for cyclopeptide sequencing
-# ______________________________
-
 # 4D Code challenge:
 def CountingPeptideswithGivenMass(m: int) -> int:
     # Input: An integer m.
@@ -228,34 +188,11 @@ def CountingPeptideswithGivenMass(m: int) -> int:
     pass
 
 
-# ______________________________
-# 5 cyclopeptide sequencing with branch-and-bound
-# ______________________________
-
-"""
-BRANCH-AND-BOUND algorithms: each such algorithm consists of a branching
-step to increase the number of candidate solutions, followed by a bounding step to
-remove hopeless candidates
-
-
-EXERCISE BREAK: How many subpeptides does a linear peptide of length n
-have?
-ANSWER: 2+3+...+n = n(n-1)/2 - 1
-
-BOUNDING STEP:
-Given an experimental spectrum Spectrum of a cyclic peptide,
-a linear peptide is consistent with Spectrum 
-if every mass in its theoretical spectrum is contained in Spectrum.
-If a mass appears more than once in the theoretical spectrum of the linear peptide, then
-it must appear at least that many times in Spectrum in order for the linear peptide to be consistent with Spectrum.
-"""
-
-
 # 4E Code challenge
 def CyclopeptideSequencing(spectrum: list) -> str:
     # Input: theoretical spectrum = list of integers
     # Output: reconstruct a cyclic peptide, such that CycloSpectrum(peptide) = spectrum(return None if no peptide)
-    # Complexty: O(n^a), but in practice faster
+    # Complexity: O(n^a), but in practice faster
     # Answer is accurate to a cyclic shift and/or reverse
     peptides = ['']
 
@@ -308,10 +245,6 @@ def CyclopeptideSequencing(spectrum: list) -> str:
     print('None')
     return None
 
-
-# ______________________________
-# 6 adapting sequencing for spectra with errors
-# ______________________________
 
 # 4F Code challenge
 def PeptideScoring(peptide_type: str, peptide: str, spectrum: list) -> float:
@@ -412,17 +345,6 @@ def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
     return LeaderPeptide
 
 
-# ______________________________
-# 7 from 20 to more than 100 amino acids
-# ______________________________
-
-# blablabal complexity explosion
-
-
-# ______________________________
-# 8 the spectral convolution saves the day
-# ______________________________
-
 # 4H Code challenge
 def SpectralConvolution(spectrum: list) -> Counter:
     # Input: list of numbers spectrum (assuming experimental spectrum)
@@ -451,15 +373,8 @@ def get_SpectralAlphabet(spectrum: list, M: int) -> list:
     return spc
 
 
-# ______________________________
-# 9 the truth about spectra
-# ______________________________
-
 # 4I Code challenge:
 def ConvolutionCyclopeptideSequencing(spectrum: list, N: int, M: int) -> str:
     # Case of LeaderBoardCyclopeptideSequencing, where alphabet computed by spectral convolution
     alphabet = get_SpectralAlphabet(spectrum, M)
     return LeaderBoardCyclopeptideSequencing(spectrum=spectrum, N=N, a=alphabet)
-
-# intensity vs mass/charge ratio
-#also solved as 4J, 4K, 4L.
