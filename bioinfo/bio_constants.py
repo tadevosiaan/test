@@ -1,23 +1,3 @@
-Vibrio_cholerae = """
-atcaatgatcaacgtaagcttctaagcatgatcaaggtgctcacacagtttatccacaacctgagtgg
-atgacatcaagataggtcgttgtatctccttcctctcgtactctcatgaccacggaaagatgatcaag
-agaggatgatttcttggccatatcgcaatgaatacttgtgacttgtgcttccaattgacatcttcagc
-gccatattgcgctggccaaggtgacggagcgggattacgaaagcatgatcatggctgttgttctgttt
-atcttgttttgactgagacttgttaggatagacggtttttcatcactgactagccaaagccttactct
-gcctgacatcgaccgtaaattgataatgaatttacatgcttccgcgacgatttacctcttgatcatcg
-atccgattgaagatcttcaattgttaattctcttgcctcgactcatagccatgatgagctcttgatca
-tgtttccttaaccctctattttttacggaagaatgatcaagctgctgctcttgatcatcgtttc"""
-
-EColi = """aatgatgatgacgtcaaaaggatccggataaaacatggtgattgcctcgcataacgcggta
-tgaaaatggattgaagcccgggccgtggattctactcaactttgtcggcttgagaaagacc
-tgggatcctgggtattaaaaagaagatctatttatttagagatctgttctattgtgatctc
-ttattaggatcgcactgccctgtggataacaaggatccggcttttaagatcaacaacctgg
-aaaggatcattaactgtgaatgatcggtgatcctggaccgtataagctgggatcagaatga
-ggggttatacacaactcaaaaactgaacaacagttgttctttggataactaccggttgatc
-caagcttcctgacagagttatccacagtagatcgcacgatctgtatacttatttgagtaaa
-ttaacccacgatcccagccattcttctgccggatcttccggaatgtcgtgatcaagaatgt
-tgatcttcagtg"""
-
 Example1 = """53++!305))6*;4826)4+.)4+);806*;4
 8!8`60))85;]8*:+*8!83(88)5*!;46(
 ;88*96*?;8)*+(;485);5*!2:*+(;495
@@ -26,6 +6,70 @@ Example1 = """53++!305))6*;4826)4+.)4+);806*;4
 06*81(+9;48;(88;4(+?34;48)4+;161
 ;:188;+?;"""
 
+AminoAcids = \
+    {'Cys': 'C', 'Asp': 'D', 'Ser': 'S', 'Gln': 'Q', 'Lys': 'K', 'Ile': 'I', 'Pro': 'P', 'Thr': 'T', 'Phe': 'F',
+     'Asn': 'N', 'Gly': 'G', 'His': 'H', 'Leu': 'L', 'Arg': 'R', 'Trp': 'W', 'Ala': 'A', 'Val': 'V', 'Glu': 'E',
+     'Tyr': 'Y', 'Met': 'M', 'STP': 'Z'}
+
+tyrocidine = 'VKLFPWFNQY'
+
+Mass = {'A': 71.03711,
+        'C': 103.00919,
+        'D': 115.02694,
+        'E': 129.04259,
+        'F': 147.06841,
+        'G': 57.02146,
+        'H': 137.05891,
+        'I': 113.08406,
+        'K': 128.09496,
+        'L': 113.08406,
+        'M': 131.04049,
+        'N': 114.04293,
+        'P': 97.05276,
+        'Q': 128.05858,
+        'R': 156.10111,
+        'S': 87.03203,
+        'T': 101.04768,
+        'V': 99.06841,
+        'W': 186.07931,
+        'Y': 163.06333}
+
+Mass_int = {'A': 71,
+            'C': 103,
+            'D': 115,
+            'E': 129,
+            'F': 147,
+            'G': 57,
+            'H': 137,
+            'L': 113,
+            'I': 113,
+            'K': 128,
+            'M': 131,
+            'N': 114,
+            'P': 97,
+            'Q': 128,
+            'R': 156,
+            'S': 87,
+            'T': 101,
+            'V': 99,
+            'W': 186,
+            'Y': 163}
+Proteins = {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
+            'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
+            'UUA': 'L', 'CUA': 'L', 'AUA': 'I', 'GUA': 'V',
+            'UUG': 'L', 'CUG': 'L', 'AUG': 'M', 'GUG': 'V',
+            'UCU': 'S', 'CCU': 'P', 'ACU': 'T', 'GCU': 'A',
+            'UCC': 'S', 'CCC': 'P', 'ACC': 'T', 'GCC': 'A',
+            'UCA': 'S', 'CCA': 'P', 'ACA': 'T', 'GCA': 'A',
+            'UCG': 'S', 'CCG': 'P', 'ACG': 'T', 'GCG': 'A',
+            'UAU': 'Y', 'CAU': 'H', 'AAU': 'N', 'GAU': 'D',
+            'UAC': 'Y', 'CAC': 'H', 'AAC': 'N', 'GAC': 'D',
+            'UAA': 'Z', 'CAA': 'Q', 'AAA': 'K', 'GAA': 'E',
+            'UAG': 'Z', 'CAG': 'Q', 'AAG': 'K', 'GAG': 'E',
+            'UGU': 'C', 'CGU': 'R', 'AGU': 'S', 'GGU': 'G',
+            'UGC': 'C', 'CGC': 'R', 'AGC': 'S', 'GGC': 'G',
+            'UGA': 'Z', 'CGA': 'R', 'AGA': 'R', 'GGA': 'G',
+            'UGG': 'W', 'CGG': 'R', 'AGG': 'R', 'GGG': 'G'}
 D = '''
 >ACU08131
 CTGGGCTAAAAGGTCCCTTAGCCTATTTAGAAAAATGGGCCATTAGGAAATTGCAAGGAA
@@ -119,3 +163,41 @@ TTCTTATCCTACCAAAAAAAAAAAATCAAACCCTGATACACCCAAAGAATGCCCTTTGCC
 CAGAAGTGTTTGCTCTATATCTATGCATGCGGGTGAGATGGCGGTGACTGCAGTGGAGGA
 AGAGGTTGGGGGTCTGCTTGGTGATTACAGACTATGTGGAGAGAAGACTCAG
 '''
+
+# weights for chapter5
+Down = [[0, 0, 0, 0, 0],
+        [1, 0, 2, 4, 3],
+        [4, 6, 5, 2, 1],
+        [4, 4, 5, 2, 1],
+        [5, 6, 8, 5, 3]]
+
+Right = [[0, 3, 2, 4, 0],
+         [0, 3, 2, 4, 2],
+         [0, 0, 7, 3, 4],
+         [0, 3, 3, 0, 2],
+         [0, 1, 3, 2, 2]]
+
+Diag = [[0, 0, 0, 0, 0],
+        [0, 5, 0, 2, 1],
+        [0, 8, 4, 3, 0],
+        [0, 10, 8, 9, 5],
+        [0, 5, 6, 4, 7]]
+
+w_possible = {
+    'A': {'A': 10, 'G': -1, 'C': -3, 'T': -4},
+    'G': {'A': -1, 'G': 7, 'C': -5, 'T': -3},
+    'C': {'A': -3, 'G': -5, 'C': 9, 'T': 0},
+    'T': {'A': -4, 'G': -3, 'C': 0, 'T': 8}
+}
+w_ordinary = {
+    'A': {'A': 1, 'G': 0, 'C': 0, 'T': 0},
+    'G': {'A': 0, 'G': 1, 'C': 0, 'T': 0},
+    'C': {'A': 0, 'G': 0, 'C': 1, 'T': 0},
+    'T': {'A': 0, 'G': 0, 'C': 0, 'T': 1}
+}
+w_mu1 = {
+    'A': {'A': 1, 'G': -1, 'C': -1, 'T': -1},
+    'G': {'A': -1, 'G': 1, 'C': -1, 'T': -1},
+    'C': {'A': -1, 'G': -1, 'C': 1, 'T': -1},
+    'T': {'A': -1, 'G': -1, 'C': -1, 'T': 1}
+}

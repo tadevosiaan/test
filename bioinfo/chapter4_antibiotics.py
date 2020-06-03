@@ -1,76 +1,12 @@
-from functools import reduce
-import bio
 import matplotlib.pyplot as plt
 from collections import Counter
 import time
+from bio_constants import Proteins
+from bio_utils import ReverseComplement, CalculateProteinMass, DNA_to_RNA, KMP
+
 
 # CHAPTER 4. How Do We Sequence Antibiotics?
 # Brute force algorithms
-
-
-# there is no protein Z avaliable, here 'Z' means 'STOP'~'STP' codon
-AminoAcids = \
-    {'Cys': 'C', 'Asp': 'D', 'Ser': 'S', 'Gln': 'Q', 'Lys': 'K', 'Ile': 'I', 'Pro': 'P', 'Thr': 'T', 'Phe': 'F',
-     'Asn': 'N', 'Gly': 'G', 'His': 'H', 'Leu': 'L', 'Arg': 'R', 'Trp': 'W', 'Ala': 'A', 'Val': 'V', 'Glu': 'E',
-     'Tyr': 'Y', 'Met': 'M', 'STP': 'Z'}
-Mass = {'A': 71.03711,
-        'C': 103.00919,
-        'D': 115.02694,
-        'E': 129.04259,
-        'F': 147.06841,
-        'G': 57.02146,
-        'H': 137.05891,
-        'I': 113.08406,
-        'K': 128.09496,
-        'L': 113.08406,
-        'M': 131.04049,
-        'N': 114.04293,
-        'P': 97.05276,
-        'Q': 128.05858,
-        'R': 156.10111,
-        'S': 87.03203,
-        'T': 101.04768,
-        'V': 99.06841,
-        'W': 186.07931,
-        'Y': 163.06333}
-Mass_int = {'A': 71,
-            'C': 103,
-            'D': 115,
-            'E': 129,
-            'F': 147,
-            'G': 57,
-            'H': 137,
-            'L': 113,
-            'I': 113,
-            'K': 128,
-            'M': 131,
-            'N': 114,
-            'P': 97,
-            'Q': 128,
-            'R': 156,
-            'S': 87,
-            'T': 101,
-            'V': 99,
-            'W': 186,
-            'Y': 163}
-Proteins = {'UUU': 'F', 'CUU': 'L', 'AUU': 'I', 'GUU': 'V',
-            'UUC': 'F', 'CUC': 'L', 'AUC': 'I', 'GUC': 'V',
-            'UUA': 'L', 'CUA': 'L', 'AUA': 'I', 'GUA': 'V',
-            'UUG': 'L', 'CUG': 'L', 'AUG': 'M', 'GUG': 'V',
-            'UCU': 'S', 'CCU': 'P', 'ACU': 'T', 'GCU': 'A',
-            'UCC': 'S', 'CCC': 'P', 'ACC': 'T', 'GCC': 'A',
-            'UCA': 'S', 'CCA': 'P', 'ACA': 'T', 'GCA': 'A',
-            'UCG': 'S', 'CCG': 'P', 'ACG': 'T', 'GCG': 'A',
-            'UAU': 'Y', 'CAU': 'H', 'AAU': 'N', 'GAU': 'D',
-            'UAC': 'Y', 'CAC': 'H', 'AAC': 'N', 'GAC': 'D',
-            'UAA': 'Z', 'CAA': 'Q', 'AAA': 'K', 'GAA': 'E',
-            'UAG': 'Z', 'CAG': 'Q', 'AAG': 'K', 'GAG': 'E',
-            'UGU': 'C', 'CGU': 'R', 'AGU': 'S', 'GGU': 'G',
-            'UGC': 'C', 'CGC': 'R', 'AGC': 'S', 'GGC': 'G',
-            'UGA': 'Z', 'CGA': 'R', 'AGA': 'R', 'GGA': 'G',
-            'UGG': 'W', 'CGG': 'R', 'AGG': 'R', 'GGG': 'G'}
-
-tyrocidine = 'VKLFPWFNQY'
 
 
 # 4A Code Challenge
@@ -103,7 +39,7 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     # Peptide
     substrings = []
     substrings_rc = []
-    text_rc = bio.ReverseComplement(text)
+    text_rc = ReverseComplement(text)
 
     print(text)  # 5' ---> 3'
     print(text_rc)  # 3' ---> 5'
@@ -111,9 +47,9 @@ def PeptideEncoding(text: str, peptide: str) -> list:
     for shift in range(0, 3):
         positions_in_dna = []
         dna = text[shift:]
-        rna = bio.DNA_to_RNA(dna)
+        rna = DNA_to_RNA(dna)
         protein = RNA_to_Protein(rna)
-        positions_in_protein = bio.KMP(text=protein, pattern=peptide)
+        positions_in_protein = KMP(text=protein, pattern=peptide)
         if len(positions_in_protein) > 0:
             positions_in_dna = [3 * p + shift for p in positions_in_protein]
         for pos in positions_in_dna:
@@ -121,9 +57,9 @@ def PeptideEncoding(text: str, peptide: str) -> list:
 
         positions_in_dna_rc = []
         dna_rc = text_rc[shift:]
-        rna_rc = bio.DNA_to_RNA(dna_rc)
+        rna_rc = DNA_to_RNA(dna_rc)
         protein_rc = RNA_to_Protein(rna_rc)
-        positions_in_protein_rc = bio.KMP(text=protein_rc, pattern=peptide)
+        positions_in_protein_rc = KMP(text=protein_rc, pattern=peptide)
         if len(positions_in_protein_rc) > 0:
             positions_in_dna_rc = [3 * p + shift for p in positions_in_protein_rc]
         for pos in positions_in_dna_rc:
@@ -138,7 +74,7 @@ def GenerateTheoreticalCycloSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Complexity: O(n^2), there is solution by prefix mass precount
     modified_peptide = peptide + peptide
     subpeptides = []
-    mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
+    mass = lambda p: CalculateProteinMass(p, mass_mode)
     for l in range(1, len(peptide)):  # 1, 2, ..., n-1 ~~ O(|peptide|-1)
         for shift in range(0, len(peptide)):  # 0, 1, 2, ..., n-1 ~~O(|peptide|)
             subpeptides.append(modified_peptide[shift: shift + l])
@@ -155,7 +91,7 @@ def GenerateTheoreticalLinearSpectrum(peptide: str, mass_mode='float') -> tuple:
     # Output: theoretical spectrum of peptide (LinearSpectrum)
     # Complexity: O(n^2), there is solution by prefix mass precount
     subpeptides = []
-    mass = lambda p: bio.CalculateProteinMass(p, mass_mode)
+    mass = lambda p: CalculateProteinMass(p, mass_mode)
     for l in range(1, len(peptide)):  # 1, 2, ..., n-1 ~~ O(|peptide| - 1)
         for shift in range(0, len(peptide) - l + 1):  # 0, 1, 2, ..., n- l ~~ O(|peptide| - l)
             subpeptides.append(peptide[shift: shift + l])
@@ -167,7 +103,7 @@ def GenerateTheoreticalLinearSpectrum(peptide: str, mass_mode='float') -> tuple:
 
 
 def plot_spectrum(spectrum: list, compare_spectrum=None):
-    # Input: theoretical spectrum
+    # Input: spectrum
     # Output: print and plot spectrum
     plt.figure()
     plt.grid(linestyle=':', linewidth=1)
@@ -215,7 +151,7 @@ def CyclopeptideSequencing(spectrum: list) -> str:
         return not len(list_diff) > 0
 
     a = get_alphabet(spectrum)
-    mass = lambda p: bio.CalculateProteinMass(p, mass_mode='int')
+    mass = lambda p: CalculateProteinMass(p, mass_mode='int')
 
     def expand(peptides: list) -> list:
         pep = []
@@ -280,7 +216,7 @@ def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
     # all peptides Peptide with mass equal to PARENTMASS(Spectrum)
     Leaderboard = ['']
     LeaderPeptide = ''
-    mass = lambda p: bio.CalculateProteinMass(p, mass_mode='int')
+    mass = lambda p: CalculateProteinMass(p, mass_mode='int')
 
     def expand(lb: list, a=None) -> list:
         lb_ = []
@@ -378,4 +314,3 @@ def ConvolutionCyclopeptideSequencing(spectrum: list, N: int, M: int) -> str:
     # Case of LeaderBoardCyclopeptideSequencing, where alphabet computed by spectral convolution
     alphabet = get_SpectralAlphabet(spectrum, M)
     return LeaderBoardCyclopeptideSequencing(spectrum, N, alphabet)
-

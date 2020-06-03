@@ -1,25 +1,10 @@
 import numpy as np
+from bio_utils import HammingDistance, gen_kMers
+from chapter1_replication import Neighbors
 
 
 # CHAPTER 2. Which DNA patterns play the role of molecular clocks?
 # Randomized algorithms
-
-
-def HammingDistance(u: str, v: str) -> int:
-    assert len(u) <= len(v)
-    if len(u) == len(v):
-        dist = 0
-        for i in range(len(u)):
-            if u[i] != v[i]:
-                dist += 1
-    else:
-        dist = float('inf')
-        for i in range(len(v) - len(u) + 1):
-            s = v[i: i + len(u)]
-            d = HammingDistance(s, u)
-            if d < dist:
-                dist = d
-    return dist
 
 
 def d(u: str, DNA: list) -> int:
@@ -28,24 +13,6 @@ def d(u: str, DNA: list) -> int:
     for i in range(t):
         dist += HammingDistance(u, DNA[i])
     return dist
-
-
-def Neighbors(Pattern: str, d: int) -> set:
-    # Input: Pattern string, d int
-    # Output: d-neighborhood of Pattern in HammDist
-    if d == 0:
-        return {Pattern}
-    if len(Pattern) == 1:
-        return {'A', 'T', 'G', 'C'}
-    neighborhood = set()
-    suffix_neighbors = Neighbors(Pattern[1:], d)
-    for Text in suffix_neighbors:
-        if HammingDistance(Pattern[1:], Text) < d:
-            for x in ['A', 'T', 'G', 'C']:
-                neighborhood.add(x + Text)
-        else:
-            neighborhood.add(Pattern[0] + Text)
-    return neighborhood
 
 
 def Profile(M: list) -> list:
@@ -92,18 +59,6 @@ def MotifEnumeration(DNA: list, k: int, d: int) -> set:
                 if iskdMotif(n, d, DNA):
                     motifs.add(n)
     return motifs
-
-
-def gen_kMers(k: int) -> list:
-    if k == 1:
-        return ['A', 'T', 'G', 'C']
-    else:
-        kmers = gen_kMers(k - 1)
-        a = list(map(lambda x: 'A' + x, kmers))
-        t = list(map(lambda x: 'T' + x, kmers))
-        c = list(map(lambda x: 'C' + x, kmers))
-        g = list(map(lambda x: 'G' + x, kmers))
-        return a + t + c + g
 
 
 def MedianString(DNA: list, k: int) -> str:
@@ -160,7 +115,7 @@ def GibbsSampler(DNA: list, k: int, N: int):
     BestMotifs = m.copy()
     for i in range(N):
         j = np.random.randint(0, t)
-        # TODO: write it futher, motifs except j-th
+        # TODO: write it further, motifs except j-th
         p = Profile(m)
         m = Motifs(p, DNA)
         if Score(m) < Score(BestMotifs):

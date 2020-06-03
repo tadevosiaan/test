@@ -2,32 +2,11 @@ import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
 from tqdm import tqdm
-
+from bio_utils import HammingDistance, ReverseComplement, FASTA_to_lists, KMP
+from random import choice
 
 # CHAPTER 1. Where in the genome doest DNA replication begin?
 # Algorithmic warmup
-
-def ReverseComplement(Pattern: str) -> str:
-    # Input: a DNA string Pattern
-    # Output: the reverse complement of Pattern
-    # Complexity: O(n)
-    return Pattern[::-1].translate(str.maketrans('ACGT', 'TGCA'))
-
-
-def FASTA_to_lists(filename) -> tuple:
-    seq_names = []
-    seqs = []
-    with open('{}'.format(filename), mode='r', encoding='utf-8') as f:
-        buf = f.readline().rstrip()
-        while buf:
-            seq_name, seq = buf[1:], ''
-            buf = f.readline().rstrip()
-            while not buf.startswith('>') and buf:
-                seq = seq + buf
-                buf = f.readline().rstrip()
-            seq_names.append(seq_name)
-            seqs.append(seq)
-    return seq_names, seqs
 
 
 # 1A Code challenge
@@ -62,17 +41,8 @@ def FrequentWords(Text: str, k: int) -> tuple:
     return list(FrequentPatterns), maxCount
 
 
-# 1C Code challenge
-def ReverseComplement(Pattern: str) -> str:
-    # Input: a DNA string Pattern
-    # Output: the reverse complement of Pattern
-    # Complexity: O(n)
-    return Pattern[::-1].translate(str.maketrans('ACGT', 'TGCA'))
-
-
 # 1D Code challenge
 def PatternMatching(Pattern: str, Genome: str) -> list:
-    from test.bioinfo.bio import KMP
     # Input: string Pattern and Genome
     # Output: all starting positions in Genome where Patterns appears as a substring
     # Complexity: using KMP we get O(n + m) time and similar space
@@ -87,9 +57,8 @@ def ClumpFindingProblem(Genome: str, k: int, L: int, t: int) -> set:
     candidates = set()
     for i in range(len(Genome) - L + 1):
         s = Genome[i: i + L]
-        words = FrequentWords(Text=s, k=k)[0]  # index 0 means we get a list
+        words = FrequentWords(Text=s, k=k)[0]  # index 0 means we take a list
         words = Counter(words)
-        # print('i: {}, str: {}, words:{}'.format(i, s, words))
         words = list(words.items())
         for f in words:
             if f[1] >= t:
@@ -142,24 +111,6 @@ def skew_gc(genome: str, k: int, save=None):
     if save is not None:
         plt.savefig('{}.png'.format(save))
     plt.show()
-
-
-def plot_EColi():
-    a, b = FASTA_to_lists('EColi')
-    skew_gc(b[0], len(b[0]))
-
-
-# 1G Code challenge
-def HammingDistance(u: str, v: str) -> int:
-    # Input: strings u,v
-    # Output: their Hamming distance
-    # Complexity: O(n)
-    distance = 0
-    assert len(u) == len(v)
-    for i in range(len(u)):
-        if u[i] != v[i]:
-            distance += 1
-    return distance
 
 
 # 1H Code challenge
@@ -304,39 +255,5 @@ def FrequentWordsWithMismatchesAndReverseComplement(Text: str, k: int, d: int) -
     return patterns
 
 
-def gen_DNA(n: int, k: int) -> list:
-    # Input: n, k integers
-    # Output: n DNA strings each len = k
-    from random import choice
-    l = []
-    for i in range(n):
-        s = ''
-        for j in range(k):
-            s += choice(['A', 'G', 'T', 'C'])
-        l.append(s)
-    return l
 
 
-def experiment():
-    np.random.seed(1337)
-    a = gen_DNA(10, 20)
-    print(a)
-    s = 'AAAGGG'
-    from random import choice
-
-    for i in range(len(a)):
-        j = np.random.randint(0, len(a[0]) - len(s) + 1)
-        k = np.random.randint(0, 6)
-        l = np.random.randint(0, 6)
-        t = list(a[i])
-        t_str = list(s)
-        t_str[k] = choice(['A', 'G', 'T', 'C'])
-        t_str[l] = choice(['A', 'G', 'T', 'C'])
-        t_str = ''.join(t_str)
-        t[j: j + len(s)] = t_str
-        print('iter: {}, s: {}, s_new: {}, pos: {}'.format(i, s, t_str, j))
-        a[i] = ''.join(t)
-    print(a)
-    long_Str = ''.join(a)
-    print(long_Str)
-    print(FrequentWordsWithMismatches(long_Str, 6, 2))
