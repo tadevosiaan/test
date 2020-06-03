@@ -340,6 +340,3 @@ def experiment():
     long_Str = ''.join(a)
     print(long_Str)
     print(FrequentWordsWithMismatches(long_Str, 6, 2))
-
-a,b = FASTA_to_lists('EColi')
-skew_gc(b[0], len(b[0]), save='ecoli_oric')

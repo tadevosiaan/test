@@ -326,7 +326,7 @@ def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
     iteration = 0
     while len(Leaderboard) > 0:
         iteration += 1
-        Leaderboard = expand(Leaderboard, a=a)
+        Leaderboard = expand(Leaderboard, a)
         i = 0
         while i < len(Leaderboard):
             p = Leaderboard[i]  # peptide from Leaderboard
@@ -338,7 +338,7 @@ def LeaderBoardCyclopeptideSequencing(spectrum: list, N: int, a=None) -> str:
                 Leaderboard.remove(p)
                 i -= 1
         l = len(Leaderboard)
-        Leaderboard = trim(lb=Leaderboard, spectrum=spectrum, N=N)
+        Leaderboard = trim(Leaderboard, spectrum, N)
         print('iter: {}, LB: {} .trim. {}, score: {}'.format(iteration, l, len(Leaderboard),
                                                              CyclopeptideScoring(LeaderPeptide, spectrum)))
     print(LeaderPeptide)
@@ -377,4 +377,5 @@ def get_SpectralAlphabet(spectrum: list, M: int) -> list:
 def ConvolutionCyclopeptideSequencing(spectrum: list, N: int, M: int) -> str:
     # Case of LeaderBoardCyclopeptideSequencing, where alphabet computed by spectral convolution
     alphabet = get_SpectralAlphabet(spectrum, M)
-    return LeaderBoardCyclopeptideSequencing(spectrum=spectrum, N=N, a=alphabet)
+    return LeaderBoardCyclopeptideSequencing(spectrum, N, alphabet)
+
